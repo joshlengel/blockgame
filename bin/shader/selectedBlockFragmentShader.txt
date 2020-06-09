@@ -1,0 +1,9 @@
+#version 400 core
+
+out vec4 fragment;
+
+const float alpha = 0.25;
+
+void main() {
+	fragment = vec4(1.0, 1.0, 1.0, alpha);
+}
