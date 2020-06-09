@@ -1,0 +1,13 @@
+#version 400 core
+
+layout(location = 0) in vec3 vertex;
+
+out vec3 textureCoords;
+
+uniform mat4 projectionView;
+
+void main() {
+	gl_Position = projectionView * vec4(vertex, 1.0);
+	
+	textureCoords = vertex;
+}

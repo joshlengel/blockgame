@@ -47,7 +47,7 @@ public class TextMesh {
 	
 	public void setText(String text) {
 		vertices.clear();
-		textureCoords.size();
+		textureCoords.clear();
 		indices.clear();
 		
 		cursorX = initCursorX;

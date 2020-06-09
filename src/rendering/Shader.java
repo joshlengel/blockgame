@@ -2,8 +2,8 @@ package rendering;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -127,7 +127,7 @@ public class Shader {
 	private static String readSource(String name) {
 		String output = "";
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(Shader.class.getResourceAsStream("/shader/" + name)))) {
+		try (BufferedReader reader = new BufferedReader(new FileReader("res/shader/" + name))) {
 			
 			String line;
 			

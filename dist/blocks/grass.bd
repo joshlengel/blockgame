@@ -1,0 +1,5 @@
+name: grass
+id: 2
+index: 0 1 2
+regular
+collidable

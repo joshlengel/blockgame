@@ -37,6 +37,10 @@ public class InventoryRenderer {
 	private int iTBufferID;
 	private int iIBufferID;
 	
+	private int iIndexCount;
+	
+	private Shader quadShader;
+	
 	public InventoryRenderer(Inventory inventory) {
 		qr = new QuadRenderer();
 		tr = new TextRenderer();
@@ -59,6 +63,9 @@ public class InventoryRenderer {
 		iIBufferID = GL15.glGenBuffers();
 		
 		this.inventory = inventory;
+		
+		quadShader = new Shader("inventoryVertexShader.txt", "inventoryFragmentShader.txt");
+		quadShader.setUniforms("aspectRatio");
 	}
 	
 	public void update(Font font) {
@@ -77,23 +84,23 @@ public class InventoryRenderer {
 				float texY = b.texCoords[1].y;
 				
 				if (amounts[i] == null)
-					amounts[i] = new Text(x, -0.75f, font, 0.25f);
+					amounts[i] = new Text(x + 0.18f, -0.9f, font, 0.25f);
 				
 				amounts[i].setText(String.valueOf(inventory.getItems(i)));
 				
 				int vertexPointer = vertices.size() / 2;
 				
-				vertices.add(x);
-				vertices.add(-1.0f);
+				vertices.add(x + 0.05f);
+				vertices.add(-0.95f);
 				
-				vertices.add(x + 0.25f);
-				vertices.add(-1.0f);
+				vertices.add(x + 0.2f);
+				vertices.add(-0.95f);
 				
-				vertices.add(x + 0.25f);
-				vertices.add(-0.75f);
+				vertices.add(x + 0.2f);
+				vertices.add(-0.8f);
 				
-				vertices.add(x);
-				vertices.add(-0.75f);
+				vertices.add(x + 0.05f);
+				vertices.add(-0.8f);
 				
 				textureCoords.add(texX);
 				textureCoords.add(texY + Constants.BLOCK_TEXTURE.getUnitHeight());
@@ -116,6 +123,7 @@ public class InventoryRenderer {
 				indices.add(vertexPointer + 3);
 			} else if (amounts[i] != null) {
 				amounts[i].free();
+				amounts[i] = null;
 			}
 		}
 		
@@ -136,6 +144,8 @@ public class InventoryRenderer {
 			iBuffer.put(i);
 		
 		iBuffer.flip();
+		
+		iIndexCount = indices.size();
 		
 		GL30.glBindVertexArray(iVaoID);
 		
@@ -158,6 +168,28 @@ public class InventoryRenderer {
 		qr.render(display, bar);
 		qr.render(display, selector);
 		
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		
+		quadShader.activate();
+		quadShader.loadUniform("aspectRatio", display.getAspectRatio());
+		
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, Constants.BLOCK_TEXTURE.getTextureID());
+		
+		GL30.glBindVertexArray(iVaoID);
+		
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+		
+		GL11.glDrawElements(GL11.GL_TRIANGLES, iIndexCount, GL11.GL_UNSIGNED_INT, 0l);
+		
+		GL20.glDisableVertexAttribArray(0);
+		GL20.glDisableVertexAttribArray(1);
+		
+		GL30.glBindVertexArray(0);
+		
+		quadShader.deactivate();
+		
 		for (Text t : amounts) {
 			if (t != null)
 				tr.render(display, t);
@@ -172,6 +204,8 @@ public class InventoryRenderer {
 			if (t != null)
 				t.free();
 		}
+		
+		quadShader.free();
 		
 		GL30.glDeleteVertexArrays(iVaoID);
 		GL15.glDeleteBuffers(iVBufferID);

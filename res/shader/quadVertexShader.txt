@@ -1,0 +1,16 @@
+#version 400 core
+
+layout(location = 0) in vec2 vertex;
+layout(location = 1) in vec2 textureCoords;
+
+out vec2 passTextureCoords;
+
+uniform float aspectRatio;
+uniform vec2 offset;
+uniform float scale;
+
+void main() {
+	gl_Position = vec4((vertex.x * scale + offset.x) / aspectRatio, vertex.y * scale + offset.y, 0.0, 1.0);
+	
+	passTextureCoords = textureCoords;
+}
